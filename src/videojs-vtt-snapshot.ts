@@ -1,5 +1,5 @@
-import type Player from 'video.js/dist/types/player';
-import type { VideojsVttSnapshotOptions, SnapshotData } from './interface';
+import type Player from "video.js/dist/types/player";
+import type { VideojsVttSnapshotOptions, SnapshotData } from "./interface";
 
 interface VideoJSSeekBar {
   el: () => HTMLElement;
@@ -47,8 +47,10 @@ export class VideojsVttSnapshot {
   }
 
   private get progressControl() {
-    const controlBar = ((this.player as any).controlBar || (this.player as any).ControlBar) as VideoJSControlBar;
-    const progressControl = controlBar.progressControl || controlBar.ProgressControl;
+    const controlBar = ((this.player as any).controlBar ||
+      (this.player as any).ControlBar) as VideoJSControlBar;
+    const progressControl =
+      controlBar.progressControl || controlBar.ProgressControl;
     return progressControl;
   }
 
@@ -64,18 +66,19 @@ export class VideojsVttSnapshot {
       this.parseVTT(vttText);
 
       // Create snapshot element
-      this.snapshotElement = document.createElement('div');
-      this.snapshotElement.className = this.options.snapshotClass || 'vjs-vtt-snapshot';
-      
+      this.snapshotElement = document.createElement("div");
+      this.snapshotElement.className =
+        this.options.snapshotClass || "vjs-vtt-snapshot";
+
       if (this.options.snapshotStyle) {
         Object.assign(this.snapshotElement.style, this.options.snapshotStyle);
       }
-      
+
       const playerEl = this.player.el();
       if (!playerEl) return;
 
       // Add CSS to move time tooltip to bottom
-      const styleEl = document.createElement('style');
+      const styleEl = document.createElement("style");
       styleEl.textContent = `
         .video-js .vjs-progress-control .vjs-mouse-display .vjs-time-tooltip {
           bottom: -4em !important;
@@ -84,21 +87,21 @@ export class VideojsVttSnapshot {
       `;
       playerEl.appendChild(styleEl);
       playerEl.appendChild(this.snapshotElement);
-      
+
       // Hide snapshot initially
       this.hideSnapshot();
 
       // Initialize event listeners
       this.initializeEventListeners();
     } catch (error) {
-      console.error('Error initializing VTT snapshot:', error);
+      console.error("Error initializing VTT snapshot:", error);
       throw error; // Re-throw to be caught by ready()
     }
   }
 
   private parseVTT(vttText: string): void {
     // Split VTT file into lines
-    const lines = vttText.split('\n');
+    const lines = vttText.split("\n");
     let currentCue: Partial<VTTCue> | null = null;
 
     // Skip WebVTT header line
@@ -107,15 +110,22 @@ export class VideojsVttSnapshot {
       const line = lines[i].trim();
 
       // Empty line indicates end of cue
-      if (line === '') {
-        if (currentCue && 'startTime' in currentCue && 'endTime' in currentCue && 'text' in currentCue) {
+      if (line === "") {
+        if (
+          currentCue &&
+          "startTime" in currentCue &&
+          "endTime" in currentCue &&
+          "text" in currentCue
+        ) {
           this.cues.push(currentCue as VTTCue);
         }
         currentCue = null;
-      } 
+      }
       // Parse timecode line
-      else if (line.includes('-->')) {
-        const [start, end] = line.split('-->').map(timeStr => this.parseTimestamp(timeStr.trim()));
+      else if (line.includes("-->")) {
+        const [start, end] = line
+          .split("-->")
+          .map((timeStr) => this.parseTimestamp(timeStr.trim()));
         currentCue = { startTime: start, endTime: end };
       }
       // Parse cue text
@@ -127,10 +137,10 @@ export class VideojsVttSnapshot {
   }
 
   private parseTimestamp(timestamp: string): number {
-    const parts = timestamp.split(':');
-    const seconds = parseFloat(parts.pop() || '0');
-    const minutes = parseInt(parts.pop() || '0', 10);
-    const hours = parseInt(parts.pop() || '0', 10);
+    const parts = timestamp.split(":");
+    const seconds = parseFloat(parts.pop() || "0");
+    const minutes = parseInt(parts.pop() || "0", 10);
+    const hours = parseInt(parts.pop() || "0", 10);
 
     return hours * 3600 + minutes * 60 + seconds;
   }
@@ -141,17 +151,21 @@ export class VideojsVttSnapshot {
 
     if (!this.isValidProgressControl(this.progressControl)) return;
 
-    this.progressControl.on('mousemove', this.handleMouseMove.bind(this));
-    this.progressControl.on('mouseleave', this.handleMouseLeave.bind(this));
+    this.progressControl.on("mousemove", this.handleMouseMove.bind(this));
+    this.progressControl.on("mouseleave", this.handleMouseLeave.bind(this));
   }
 
-  private isValidProgressControl(control: any): control is VideoJSProgressControl {
+  private isValidProgressControl(
+    control: any
+  ): control is VideoJSProgressControl {
     const seekBar = control.seekBar || control.SeekBar;
-    return control && 
-            typeof control.el === 'function' && 
-            typeof control.on === 'function' &&
-            seekBar &&
-            typeof seekBar.calculateDistance === 'function';
+    return (
+      control &&
+      typeof control.el === "function" &&
+      typeof control.on === "function" &&
+      seekBar &&
+      typeof seekBar.calculateDistance === "function"
+    );
   }
 
   private handleMouseMove(event: MouseEvent): void {
@@ -160,7 +174,7 @@ export class VideojsVttSnapshot {
     if (!this.isValidProgressControl(this.progressControl)) return;
 
     const barRect = this.progressControl.el().getBoundingClientRect();
-    
+
     // Store the latest mouse event
     this.lastMouseEvent = { event, barRect };
 
@@ -179,7 +193,8 @@ export class VideojsVttSnapshot {
 
     const barRect = this.progressControl.el().getBoundingClientRect();
 
-    const seekBar = (this.progressControl.seekBar || this.progressControl.SeekBar);
+    const seekBar =
+      this.progressControl.seekBar || this.progressControl.SeekBar;
     const percent = seekBar.calculateDistance(event);
     const mouseTime = this.player.duration() * percent;
 
@@ -215,13 +230,15 @@ export class VideojsVttSnapshot {
 
     // fallback: closest cue
     let closestCue = this.cues[0];
-    let minDistance = Math.abs(time - (closestCue.startTime + closestCue.endTime) / 2);
+    let minDistance = Math.abs(
+      time - (closestCue.startTime + closestCue.endTime) / 2
+    );
 
     for (let i = 1; i < this.cues.length; i++) {
       const cue = this.cues[i];
       const cueCenter = (cue.startTime + cue.endTime) / 2;
       const distance = Math.abs(time - cueCenter);
-      
+
       if (distance < minDistance) {
         minDistance = distance;
         closestCue = cue;
@@ -243,17 +260,24 @@ export class VideojsVttSnapshot {
     }
   }
 
-  private parseVttCue(cue: VTTCue): [string, { x: number; y: number; w: number; h: number }] {
-    const parts = cue.text.trim().split('#');
+  private parseVttCue(
+    cue: VTTCue
+  ): [string, { x: number; y: number; w: number; h: number }] {
+    const parts = cue.text.trim().split("#");
     const src = parts[0];
-    const xywh = parts[1]?.split('=')[1]?.split(',').map(Number) || [0, 0, 160, 90];
-    
-    return [src, {
-      x: xywh[0] || 0,
-      y: xywh[1] || 0,
-      w: xywh[2] || 160,
-      h: xywh[3] || 90
-    }];
+    const xywh = parts[1]?.split("=")[1]?.split(",").map(Number) || [
+      0, 0, 160, 90,
+    ];
+
+    return [
+      src,
+      {
+        x: xywh[0] || 0,
+        y: xywh[1] || 0,
+        w: xywh[2] || 160,
+        h: xywh[3] || 90,
+      },
+    ];
   }
 
   private showSnapshot(data: SnapshotData, event: MouseEvent, barRect: DOMRect): void {
@@ -292,16 +316,16 @@ export class VideojsVttSnapshot {
 
   private hideSnapshot(): void {
     if (this.snapshotElement) {
-      this.snapshotElement.style.display = 'none';
+      this.snapshotElement.style.display = "none";
     }
   }
 
   private formatTime(seconds: number): string {
-    const pad = (num: number): string => num.toString().padStart(2, '0');
+    const pad = (num: number): string => num.toString().padStart(2, "0");
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    
+
     return hours > 0
       ? `${pad(hours)}:${pad(minutes)}:${pad(secs)}`
       : `${pad(minutes)}:${pad(secs)}`;

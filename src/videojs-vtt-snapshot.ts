@@ -280,37 +280,37 @@ export class VideojsVttSnapshot {
     ];
   }
 
-  private showSnapshot(data: SnapshotData, event: MouseEvent, barRect: DOMRect): void {
+  private showSnapshot(
+    data: SnapshotData,
+    event: MouseEvent,
+    barRect: DOMRect
+  ): void {
     if (!this.snapshotElement) return;
 
-    // Position the snapshot element
-    const snapshotRect = this.snapshotElement.getBoundingClientRect();
-    let centerX = event.clientX - snapshotRect.width / 2;
+    const videoContainer = this.player.el();
+    if (!videoContainer) return;
 
-    // check the bound of video container.
-    const videoContainer = this.player.el().parentElement;
-    if (videoContainer) {
-      const videoContainerRect = videoContainer.getBoundingClientRect();
-      if (
-        centerX + data.w > videoContainerRect.width
-        || centerX < 0
-      ) {
-        centerX = Math.max(0, Math.min(videoContainerRect.width - data.w, centerX));
-      }
-    }
-    
+    const containerRect = videoContainer.getBoundingClientRect();
+
+    // Convert clientX to position relative to the video container
+    const relativeX = event.clientX - containerRect.left;
+    let centerX = relativeX - data.w / 2;
+
+    // Clamp to container bounds
+    centerX = Math.max(0, Math.min(containerRect.width - data.w, centerX));
+
     // Set the position and background
     Object.assign(this.snapshotElement.style, {
-      display: 'block',
-      position: 'absolute',
+      display: "block",
+      position: "absolute",
       left: `${centerX}px`,
       bottom: `${barRect.height + 60}px`, // 10px above the progress bar
       width: `${data.w}px`,
       height: `${data.h}px`,
       backgroundImage: `url(${data.src})`,
       backgroundPosition: `-${data.x}px -${data.y}px`,
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: 'auto'
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "auto",
     });
   }
 

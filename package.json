@@ -35,9 +35,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/telephant/videojs-vtt-snapshot"
+    "url": "https://github.com/brunocoelho/videojs-vtt-snapshot"
   },
-  "homepage": "https://github.com/telephant/videojs-vtt-snapshot",
+  "homepage": "https://github.com/brunocoelho/videojs-vtt-snapshot",
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/video.js": "^7.3.58",

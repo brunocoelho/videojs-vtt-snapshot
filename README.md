@@ -1,8 +1,6 @@
 # videojs-vtt-snapshot
 
-A Video.js plugin that shows thumbnail previews when hovering over the progress bar. The thumbnails are defined in a VTT file and can use sprite sheets for better performance.
-
-![Example](example/sprite_001.jpg)
+A Video.js plugin that shows thumbnail previews when hovering over the progress bar. The thumbnails are defined in a VTT file.
 
 ## Installation
 
@@ -23,7 +21,7 @@ yarn add videojs-vtt-snapshot
 <script src="path/to/videojs-vtt-snapshot.js"></script>
 
 <video id="my-video" class="video-js">
-  <source src="my-video.mp4" type="video/mp4">
+  <source src="my-video.mp4" type="video/mp4" />
 </video>
 
 <script>
@@ -61,6 +59,22 @@ yarn add videojs-vtt-snapshot
 </script>
 ```
 
+Or
+
+```ts
+// Example: Your js file.
+
+import videojs from "video.js"
+import { registerVttSnapshotPlugin } from "videojs-vtt-snapshot"
+
+// Register the plugin with YOUR video.js instance
+registerVttSnapshotPlugin(videojs)
+
+...
+
+player.vttSnapshot({ vttUrl: 'URL to the vtt file. Can be an external URL or relative path.' })
+```
+
 2. Create a VTT file for your thumbnails (thumbnails.vtt):
 
 ```
@@ -82,6 +96,7 @@ That's it! Now when you hover over the progress bar, you'll see thumbnail previe
 #### beforeHovering(data: SnapshotData) => SnapshotData | void
 
 Called before showing a thumbnail. Use this callback to:
+
 - Modify the thumbnail source or position
 - Load different quality thumbnails based on conditions
 - Add authentication tokens to URLs
@@ -93,15 +108,15 @@ Called before showing a thumbnail. Use this callback to:
     // Example 1: Load HD thumbnails for better quality
     return {
       ...data,
-      src: data.src.replace('sprite_001.jpg', 'sprite_001_hd.jpg'),
+      src: data.src.replace("sprite_001.jpg", "sprite_001_hd.jpg"),
       w: data.w * 2,
-      h: data.h * 2
+      h: data.h * 2,
     };
 
     // Example 2: Add authentication token
     return {
       ...data,
-      src: `${data.src}?token=${getAuthToken()}`
+      src: `${data.src}?token=${getAuthToken()}`,
     };
 
     // Example 3: Skip thumbnail by returning void
@@ -109,13 +124,14 @@ Called before showing a thumbnail. Use this callback to:
       return; // Don't show thumbnails for first 10 seconds
     }
     return data;
-  }
+  };
 }
 ```
 
 #### onHover(data: SnapshotData) => void
 
 Called after the thumbnail is shown. Use this callback to:
+
 - Track user behavior
 - Update UI elements
 - Trigger side effects
@@ -127,11 +143,11 @@ Called after the thumbnail is shown. Use this callback to:
     updateChapterTitle(data.time);
 
     // Example 2: Track user interaction
-    analytics.track('video_preview', {
+    analytics.track("video_preview", {
       time: data.time,
-      src: data.src
+      src: data.src,
     });
-  }
+  };
 }
 ```
 
@@ -140,13 +156,14 @@ Called after the thumbnail is shown. Use this callback to:
 #### snapshotClass: string
 
 A custom CSS class for the thumbnail element. Use this to:
+
 - Apply custom styles
 - Add animations
 - Override default appearance
 
 ```javascript
 {
-  snapshotClass: 'my-custom-snapshot'
+  snapshotClass: "my-custom-snapshot";
 }
 ```
 
@@ -162,6 +179,7 @@ A custom CSS class for the thumbnail element. Use this to:
 #### snapshotStyle: Partial<CSSStyleDeclaration>
 
 Direct style object for the thumbnail element. Use this for:
+
 - Dynamic styles
 - Inline customization
 - Quick prototyping
@@ -192,16 +210,17 @@ The data structure passed to callbacks:
   src: string;
 
   // Sprite coordinates (in pixels)
-  x: number;  // X position in sprite sheet
-  y: number;  // Y position in sprite sheet
-  w: number;  // Width of thumbnail
-  h: number;  // Height of thumbnail
+  x: number; // X position in sprite sheet
+  y: number; // Y position in sprite sheet
+  w: number; // Width of thumbnail
+  h: number; // Height of thumbnail
 }
 ```
 
 ## VTT File Format
 
 The VTT file should follow this format:
+
 ```
 WEBVTT
 
@@ -216,4 +235,4 @@ WEBVTT
 
 ## License
 
-MIT 
+MIT

@@ -1,9 +1,9 @@
 ---
-description: 
+description:
 globs: *
 alwaysApply: false
 ---
 - use typescript.
-- use pnpm as pacakge manager and use pnpm add ** to intstall pacakge.
-- do not update the verison of any pacakge manually, let pnpm maintain it.
-- comment when only nesseary
+- use pnpm as package manager and use pnpm add ** to install package.
+- do not update the version of any package manually, let pnpm maintain it.
+- comment when only necessary
